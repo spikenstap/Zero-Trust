@@ -1,0 +1,17 @@
+Zero Trust Medical — verification, 2026-10-28
+
+49 pytest tests passed on Python 3.12.14. One dependency deprecation warning (Starlette / AnyIO BlockingPortal); no test failures.
+
+Validated in browser: desktop and mobile layout, role-based cards, nurse masking, admin medical-data denial, separate audit observer, five attack simulations and demo reset.
+
+Codex Security review found two issues during development; both were fixed before this version:
+- Host-derived authorization path mismatch: gateway now uses the same ASGI routing path as Starlette; sensitive handlers also enforce authorization.
+- Distinguishable foreign/missing patient denial: both return the same public reason.
+
+Regression tests cover crafted Host headers, unauthorized reset, token validity after denied reset, identical denial reasons, handler error auditing and atomic reset rollback.
+
+Live local HTTP checks after fixes: foreign and missing cards 403 with identical reasons; anonymous audit/reset with adversarial Host 401; own card remains 200 after denied reset.
+
+node --check static/app.js and docker compose config --quiet passed. Docker Engine was unavailable, so container build/start was not verified. Local Uvicorn startup was verified.
+
+This is an educational prototype using only synthetic records. No production-compliance claim or dependency-vulnerability-database assessment is made.

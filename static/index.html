@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#002fa7">
+  <title>Zero Trust Medical — учебная лаборатория</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23002fa7'/%3E%3Cpath d='M16 8v16M8 16h16' stroke='white' stroke-width='4'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">К содержимому</a>
+  <header class="topbar">
+    <a class="brand" href="#main"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M16 7v18M7 16h18"/></svg></span><span>Zero Trust <strong>Medical</strong></span></a>
+    <nav aria-label="Разделы"><a href="#access">Доступ</a><a href="#patients">Пациенты</a><a href="#audit">Аудит</a></nav>
+    <span class="demo-tag">Учебный прототип</span>
+  </header>
+  <main id="main">
+    <section class="intro">
+      <div><p class="eyebrow">Лаборатория безопасности медицинских данных</p><h1>Доверие не предполагается.<br><span>Доступ проверяется.</span></h1><p class="intro-copy">Смените роль, откройте карту, проверьте защиту.<br>Каждое решение системы оставляет след в журнале.</p></div>
+      <aside class="demo-note"><span class="small-label">Безопасная среда для демонстрации</span><p>5 пациентов.<br>Только вымышленные данные.</p><span>Учебная модель Zero Trust.<br>Не предназначена для клинического использования.</span></aside>
+    </section>
+    <section class="pipeline" aria-label="Как проверяется каждый запрос">
+      <div><span class="step-number">01</span><div><strong>Проверка токена</strong><small>Подпись и срок JWT · 15 минут</small></div></div>
+      <div><span class="step-number">02</span><div><strong>Контроль частоты</strong><small>10 запросов / 10 секунд</small></div></div>
+      <div><span class="step-number">03</span><div><strong>Роль и политика</strong><small>Минимально необходимые права</small></div></div>
+      <div><span class="step-number">04</span><div><strong>Запись в аудит</strong><small>Результат, причина, аномалии</small></div></div>
+    </section>
+
+    <section id="access" class="panel access-panel">
+      <div class="section-head"><div class="heading-pair"><span class="section-number">01</span><div><h2>Кто запрашивает доступ?</h2><p>Выберите демо-пользователя. Пароль для всех: <code>demo123</code></p></div></div><span id="session-status" class="badge neutral">Нет активной сессии</span></div>
+      <div class="roles" aria-label="Демо-пользователи">
+        <button class="role-card" data-user="doctor_aidar" aria-pressed="false"><span class="role-top"><span class="avatar">АО</span><span class="role-label">Врач</span></span><strong>Айдар Омаров</strong><span class="username">doctor_aidar</span><span class="role-rule">Только свои пациенты</span></button>
+        <button class="role-card" data-user="doctor_sara" aria-pressed="false"><span class="role-top"><span class="avatar">СА</span><span class="role-label">Врач</span></span><strong>Сара Алиева</strong><span class="username">doctor_sara</span><span class="role-rule">Только свои пациенты</span></button>
+        <button class="role-card" data-user="nurse_aigul" aria-pressed="false"><span class="role-top"><span class="avatar">АС</span><span class="role-label">Медсестра</span></span><strong>Айгуль Садыкова</strong><span class="username">nurse_aigul</span><span class="role-rule">Общие данные без диагноза</span></button>
+        <button class="role-card" data-user="patient_dana" aria-pressed="false"><span class="role-top"><span class="avatar">ДН</span><span class="role-label">Пациент</span></span><strong>Дана Нурланова</strong><span class="username">patient_dana</span><span class="role-rule">Только собственная карта</span></button>
+        <button class="role-card" data-user="admin" aria-pressed="false"><span class="role-top"><span class="avatar">АД</span><span class="role-label">Администратор</span></span><strong>Администратор</strong><span class="username">admin</span><span class="role-rule">Аудит без медицинских данных</span></button>
+      </div>
+      <div class="session-strip"><p id="identity">Войдите, чтобы исследовать политики доступа.</p><div class="session-actions"><details id="token-details"><summary>Посмотреть JWT</summary><div class="token-box"><small>Токен хранится только в памяти страницы.</small><code id="token-value">Токен ещё не выдан</code></div></details><button id="logout" class="text-button" disabled>Выйти</button></div></div>
+      <div id="login-feedback" class="feedback" role="status" hidden></div>
+    </section>
+
+    <div class="workspace-grid">
+      <section id="patients" class="panel patients-panel">
+        <div class="section-head"><div class="heading-pair"><span class="section-number">02</span><div><h2>Медицинские карты</h2><p id="patient-scope">Доступ определяется на сервере</p></div></div><button id="refresh-patients" class="secondary" disabled>Обновить</button></div>
+        <div id="patient-feedback" class="feedback inset" role="status" hidden></div>
+        <div id="patient-empty" class="empty"><svg aria-hidden="true" viewBox="0 0 48 48"><path d="M14 8h20v32H14zM20 8V5h8v3M20 20h8M20 27h8M20 34h5"/></svg><h3>Сначала выберите роль</h3><p>Список покажет только те карты,<br>которые разрешены текущему пользователю.</p></div>
+        <div id="patient-content" hidden><div class="table-scroll"><table class="patient-table"><caption class="sr-only">Доступные пациенты</caption><thead><tr><th>Пациент</th><th>Лечащий врач</th><th>Карта</th></tr></thead><tbody id="patient-rows"></tbody></table></div></div>
+        <div id="record" class="record" hidden aria-live="polite"></div>
+        <form id="manual-card" class="manual-card"><label for="patient-id">Открыть карту по ID</label><div><input id="patient-id" type="number" min="1" max="999999999" value="3" required><button id="open-card" class="secondary" disabled>Проверить доступ</button></div><small>Можно запросить чужую карту и увидеть решение политики.</small></form>
+        <div class="panel-foot"><span class="lock-icon" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="M6 9V6a4 4 0 018 0v3M4 9h12v8H4z"/></svg></span>Диагноз и заметки зашифрованы в SQLite с помощью Fernet</div>
+      </section>
+
+      <aside class="panel attacks-panel">
+        <div class="section-head"><div><span class="small-label">Проверка защиты</span><h2>Имитация атак</h2></div><span class="lab-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 3h8M10 3v7l-6 9a1 1 0 001 2h14a1 1 0 001-2l-6-9V3M8 15h8"/></svg></span></div>
+        <p class="attack-intro">Сценарии выполняются от <strong>doctor_aidar</strong> в отдельной сессии. Текущая роль не меняется.</p>
+        <div class="attack-list">
+          <button data-attack="missing"><span><strong>Запрос без токена</strong><small>Проверка обязательной авторизации</small></span><span class="expected deny">401</span></button>
+          <button data-attack="foreign"><span><strong>Чужая карта × 3</strong><small>Отказ и детектор серии нарушений</small></span><span class="expected deny">403</span></button>
+          <button data-attack="tampered"><span><strong>Подделанный токен</strong><small>Изменение подписи JWT</small></span><span class="expected deny">401</span></button>
+          <button data-attack="spam"><span><strong>Спам запросами</strong><small>15 последовательных запросов</small></span><span class="expected suspicious">429</span></button>
+          <button data-attack="night"><span><strong>Ночной доступ</strong><small>Разрешён, но отмечен как аномалия</small></span><span class="expected suspicious">200</span></button>
+        </div>
+        <label class="night-toggle"><input type="checkbox" id="night-mode"><span>Имитировать ночь для моих запросов<small>00:00–05:00 · Asia/Qyzylorda</small></span></label>
+        <div id="attack-result" class="attack-result" role="status"><strong>Защита готова к проверке</strong><p>Выберите сценарий. Здесь появятся HTTP-код и номер записи аудита.</p></div>
+      </aside>
+    </div>
+
+    <section id="audit" class="panel audit-panel">
+      <div class="section-head"><div class="heading-pair"><span class="section-number">03</span><div><h2>Журнал аудита</h2><p>Последние 100 событий · обновление каждые 2 секунды</p></div></div><div class="audit-actions"><span id="audit-status" class="badge neutral">Наблюдатель отключён</span><button id="connect-audit" class="primary">Подключить admin</button></div></div>
+      <div class="audit-explainer">Наблюдатель использует отдельный JWT администратора. Он видит журнал, но не получает доступ к медицинским картам.</div>
+      <div class="audit-summary"><div><span class="metric" id="count-all">—</span><span>событий в выборке</span></div><div><span class="metric allow-text" id="count-allow">—</span><span>разрешено</span></div><div><span class="metric deny-text" id="count-deny">—</span><span>отказов</span></div><div><span class="metric suspicious-text" id="count-suspicious">—</span><span>подозрительных</span></div></div>
+      <div id="audit-feedback" class="feedback inset" role="status" hidden></div>
+      <div id="audit-empty" class="empty compact"><h3>Журнал доступен администратору</h3><p>Подключите наблюдателя, чтобы видеть результаты проверок в реальном времени.</p></div>
+      <div id="audit-content" class="table-scroll audit-scroll" hidden><table><caption class="sr-only">События безопасности</caption><thead><tr><th>ID / время</th><th>Пользователь</th><th>Действие / ресурс</th><th>Решение</th><th>Причина / аномалия</th></tr></thead><tbody id="audit-rows"></tbody></table></div>
+      <div class="audit-footer"><span id="audit-updated">Ожидание подключения</span><div><button id="pause-audit" class="text-button" disabled>Приостановить</button><button id="reset-demo" class="text-button danger-text" disabled>Сбросить демо</button></div></div>
+    </section>
+    <footer><span><strong>Zero Trust Medical</strong> · Учебный MVP</span><span>Проверяй каждый запрос. Предоставляй минимум прав.</span></footer>
+  </main>
+</body>
+</html>

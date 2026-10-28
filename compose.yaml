@@ -1,0 +1,21 @@
+services:
+  medical:
+    build: .
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      ENV_FILE: /config/.env
+      DATABASE_URL: sqlite:////data/medical.db
+    volumes:
+      - demo-data:/data
+      - demo-config:/config
+    command: ["sh", "-c", "python scripts/init_env.py --path /config/.env && exec uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 1"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+volumes:
+  demo-data:
+  demo-config:
